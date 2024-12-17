@@ -7,15 +7,17 @@ import styled from "styled-components";
 const Container = styled.div`
     padding: 20px;
     display: flex;
-    height: 100vh;
+    height: 75%;
     width: 90%;
     margin: auto;
     flex-wrap: wrap;
+    border:2px solid red;
 `;
 
 const StyledVideo = styled.video`
-    height: 40%;
-    width: 50%;
+    height: 20rem;
+    width: 30rem;
+    border: 2px solid black;
 `;
 
 const Video = (props) => {
@@ -81,6 +83,7 @@ const Room = (props) => {
                 const item = peersRef.current.find(p => p.peerID === payload.id);
                 item.peer.signal(payload.signal);
             });
+
         })
     }, []);
 
@@ -160,15 +163,30 @@ const Room = (props) => {
     };
     
 
+
+    function sendMessage(){
+        console.log("message sent\n");
+        
+        socketRef.current.emit("send message", {roomID, message: "hello"});
+    }
+
+    useEffect(()=>{
+        socketRef.current.on("receive message", data => {
+            console.log(`${data.userSocketId} says: ${data.message}`);
+        });
+    }, [])
+
     return (
         <Container>
             <StyledVideo muted ref={userVideo} autoPlay playsInline />
-            {peers.length}
             {peers.map((peer, index) => {
                 return (
                     <Video key={index} peer={peer} />
                 );
             })}
+
+            <button onClick={sendMessage}>Message sending test button</button>
+            {peers.length}
         </Container>
     );
 };

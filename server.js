@@ -62,6 +62,21 @@ io.on('connection', socket => {
         io.to(payload.callerID).emit('receiving returned signal', { signal: payload.signal, id: socket.id });
     });
 
+
+    socket.on("send message", ({ roomID, message }) => {
+        console.log("roomiID: ", roomID, " message: ", message);
+        
+        console.log("users, ", users);
+        console.log("users[roomID]: ", users[roomID]);
+        console.log("users.a[0]: ", users.a[0]);
+        
+        users[roomID].forEach(userSocketId => {
+            io.to(userSocketId).emit('receive message', {userSocketId, message});
+        });
+    });
+
+  
+
     socket.on('disconnect', () => {
         const roomID = socketToRoom[socket.id];
         let room = users[roomID];
