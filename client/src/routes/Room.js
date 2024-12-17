@@ -4,20 +4,48 @@ import Peer from "simple-peer";
 import styled from "styled-components";
 
 
-const Container = styled.div`
-    padding: 20px;
-    display: flex;
-    height: 75%;
-    width: 90%;
-    margin: auto;
-    flex-wrap: wrap;
-    border:2px solid red;
+const Wrapper = styled.div`
+  display: flex;
+  height: 100vh; 
+  width: 100%;
+  justify-content: space-evenly;
+  padding: 1rem;
 `;
 
+const Container = styled.div`
+  flex: 0 0 65%; 
+  border: 1px solid red;
+  display: flex;
+  flex-wrap:wrap;
+  gap:1rem;
+  padding: 1rem;
+  height: fit-content;
+  justify-content: space-evenly;
+`;
+
+const MessageBox = styled.div`
+  flex: 0 0 25%;
+  border: 1px solid green;
+  max-height: 100vh;
+  overflow: hidden;
+  position: relative;
+  padding: 0;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+`;
+
+
 const StyledVideo = styled.video`
-    height: 20rem;
-    width: 30rem;
+    height:20rem;
+    width:26rem;
     border: 2px solid black;
+    object-fit: cover;
+     
 `;
 
 const Video = (props) => {
@@ -45,6 +73,8 @@ const Room = (props) => {
     const socketRef = useRef();
     const userVideo = useRef();
     const peersRef = useRef([]);
+    const [messages, setmessages] = useState([]);
+    const [inputMessage, setInputMessage] = useState('');
     const roomID = props.match.params.roomID;
 
     useEffect(async() => {
@@ -167,27 +197,81 @@ const Room = (props) => {
     function sendMessage(){
         console.log("message sent\n");
         
-        socketRef.current.emit("send message", {roomID, message: "hello"});
+        socketRef.current.emit("send message", {roomID, message: inputMessage});
+        setInputMessage('')
     }
 
     useEffect(()=>{
         socketRef.current.on("receive message", data => {
-            console.log(`${data.userSocketId} says: ${data.message}`);
+            console.log(`${data.from} says: ${data.message}`);
+
+            setmessages(prevMessages => [...prevMessages, data]);
+            console.log(messages);
+            
         });
     }, [])
 
-    return (
-        <Container>
-            <StyledVideo muted ref={userVideo} autoPlay playsInline />
-            {peers.map((peer, index) => {
-                return (
-                    <Video key={index} peer={peer} />
-                );
-            })}
 
-            <button onClick={sendMessage}>Message sending test button</button>
-            {peers.length}
-        </Container>
+    function createMessageDiv(msg){
+        return (
+            <div style={{margin:"1rem"}}>
+                <h5>:{msg.from}</h5>
+                <h3 style={{margin:".5rem"}}>{msg.message}</h3>
+            </div>
+        )
+    }
+
+
+    return (
+        <Wrapper style={{display:"flex", gap:"2rem"}}>
+
+            <Container>
+                <StyledVideo muted ref={userVideo} autoPlay playsInline />
+                {peers.map((peer, index) => {
+                    return (
+                        <Video key={index} peer={peer} />
+                    );
+                })}
+            </Container>
+            
+            <MessageBox>
+            <div style={{ overflowY: "scroll", height: "calc(100% - 3rem)", scrollbarWidth: "none",
+    msOverflowStyle: "none" }}>
+                {messages.map(msg => {
+                    return createMessageDiv(msg);
+                })}
+            </div>
+
+            <div
+                style={{
+                    border: "2px solid red",
+                    height: "3rem",
+                    width: "100%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    position: "absolute",
+                    bottom: "0",
+                    backgroundColor: "white",
+                }}
+            >
+                <input
+                    value={inputMessage}
+                    onChange={(e) => setInputMessage(e.target.value)}
+                    style={{ width: "75%", height: "100%" }}
+                    placeholder="Enter your message"
+                />
+                <button
+                    style={{ width: "20%", height: "100%" }}
+                    onClick={()=>inputMessage.length ? sendMessage(): ''}
+                >
+                    Send
+                </button>
+            </div>
+        </MessageBox>
+
+        </Wrapper>
+
     );
 };
 

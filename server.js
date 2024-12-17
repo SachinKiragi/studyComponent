@@ -64,14 +64,14 @@ io.on('connection', socket => {
 
 
     socket.on("send message", ({ roomID, message }) => {
-        console.log("roomiID: ", roomID, " message: ", message);
-        
-        console.log("users, ", users);
+        console.log("67)roomiID: ", roomID, " message: ", message);
+        console.log("68)from sockteid: ", socket.id);
+        const from = socket.id;
+        console.log("70)users, ", users);
         console.log("users[roomID]: ", users[roomID]);
-        console.log("users.a[0]: ", users.a[0]);
         
         users[roomID].forEach(userSocketId => {
-            io.to(userSocketId).emit('receive message', {userSocketId, message});
+            io.to(userSocketId).emit('receive message', {from, message});
         });
     });
 
