@@ -75,15 +75,36 @@ io.on('connection', socket => {
         });
     });
 
-  
 
-    socket.on('disconnect', () => {
+    function removeSocketIdFromRoom(){
         const roomID = socketToRoom[socket.id];
         let room = users[roomID];
         if (room) {
             room = room.filter(id => id !== socket.id);
             users[roomID] = room;
         }
+
+        console.log("emitting all userd to say good bye to ", socket.id);
+        console.log("usersinthis rrooom: ", users[roomID], "\n");
+        
+        if(users[roomID]){
+            users[roomID].forEach(userSocketId => {
+                io.to(userSocketId).emit('remove user', socket.id);
+            });
+        }
+    }
+
+    socket.on('leave room', ()=>{
+        console.log(`${socket.id} wants to leave\n`);
+        
+        removeSocketIdFromRoom();
+    })
+
+
+    socket.on('disconnect', () => {
+        removeSocketIdFromRoom();
+        console.log(`${socket.id} removed from ${socketToRoom[socket.id]}\n`);
+        console.log("user in 99 server: ", users);
     });
 
 });

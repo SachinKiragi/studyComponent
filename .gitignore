@@ -114,5 +114,3 @@ dist
 .yarn/build-state.yml
 .pnp.*
 
-
-*.key

@@ -8,7 +8,7 @@ const CreateRoom = (props) => {
         const id = roomName;
         props.history.push(`/room/${id}`);
     }
-
+    
 
     return (
         <div>
