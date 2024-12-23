@@ -71,6 +71,7 @@ io.on('connection', socket => {
         console.log("users[roomID]: ", users[roomID]);
         
         users[roomID].forEach(userSocketId => {
+            if(userSocketId!=socket.id)
             io.to(userSocketId).emit('receive message', {from, message});
         });
     });

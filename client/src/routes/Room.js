@@ -2,8 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import io from "socket.io-client";
 import Peer from "simple-peer";
 import styled from "styled-components";
-import socket from "socket.io-client/lib/socket";
-import { useId } from "react";
 
 const Wrapper = styled.div`
   display: flex;
@@ -77,6 +75,10 @@ const Room = (props) => {
   const roomID = props.match.params.roomID;
 
   useEffect(() => {
+    // Load stored messages for the room
+    const storedMessages = JSON.parse(localStorage.getItem(`chatMessages_${roomID}`)) || [];
+    setMessages(storedMessages);
+
     socketRef.current = io.connect("https://192.168.29.188:8181");
     navigator.mediaDevices
       .getUserMedia({ video: videoConstraints, audio: false })
@@ -84,12 +86,8 @@ const Room = (props) => {
         userVideo.current.srcObject = stream;
         socketRef.current.emit("join room", roomID);
         socketRef.current.on("all users", (users) => {
-          console.log("users in this room: ", users);
-          
           const peers = [];
           users.forEach((userID) => {
-            console.log("user id: ", useId);
-            
             const peer = createPeer(userID, socketRef.current.id, stream);
             peersRef.current.push({ 
               peerID: userID,
@@ -98,16 +96,10 @@ const Room = (props) => {
             peers.push(peer);
           });
           setPeers(peers);
-          console.log("users in 95: ", peers);
-          
         });
 
         socketRef.current.on("user joined", (payload) => {
-          console.log("paylid callerid: ", payload.callerID);
-          
           const peer = addPeer(payload.signal, payload.callerID, stream);
-          console.log("peerSocketId: ", peer.peerSocketId, "\n");
-          
           peersRef.current.push({
             peerID: payload.callerID,
             peer,
@@ -121,24 +113,16 @@ const Room = (props) => {
         });
       });
 
-     
-      
-  }, []);
+    return () => {
+      // Save messages for the room on component unmount
+      localStorage.setItem(`chatMessages_${roomID}`, JSON.stringify(messages));
+    };
+  }, [roomID]);
 
-
-    useEffect(()=>{
-      console.log("users 116: ", peers);
-      console.log("peer ref: ", peersRef.current, typeof(peersRef.current), peersRef.current[0]);
-      
-
-      console.log("each peer\n");
-
-      peers.forEach(peer => {
-        console.log("peer: ", peer.peerSocketId);
-      })
-      
-
-    },[peers, [peersRef]])
+  useEffect(() => {
+    // Save messages to localStorage whenever they change
+    localStorage.setItem(`chatMessages_${roomID}`, JSON.stringify(messages));
+  }, [messages, roomID]);
 
   const iceServers = [
     {
@@ -147,8 +131,6 @@ const Room = (props) => {
   ];
 
   function createPeer(userToSignal, callerID, stream) {
-    console.log("users to sognal:  ", userToSignal, " calledid: ", callerID);
-    
     const peer = new Peer({
       initiator: true,
       trickle: false,
@@ -166,17 +148,13 @@ const Room = (props) => {
   }
 
   function addPeer(incomingSignal, callerID, stream) {
-    console.log("incoming signal: ", incomingSignal, " caller id: ", callerID);
-    
     const peer = new Peer({
       initiator: false,
       trickle: false,
       config: { iceServers },
       stream,
     });
-    peer.peerSocketId = callerID
-
-    
+    peer.peerSocketId = callerID;
 
     peer.on("signal", (signal) => {
       socketRef.current.emit("returning signal", { signal, callerID });
@@ -188,7 +166,9 @@ const Room = (props) => {
   }
 
   function sendMessage() {
-    socketRef.current.emit("send message", { roomID, message: inputMessage });
+    const newMessage = { roomID, message: inputMessage, from: socketRef.current.id };
+    socketRef.current.emit("send message", newMessage);
+    setMessages((prevMessages) => [...prevMessages, newMessage]);
     setInputMessage("");
   }
 
@@ -197,27 +177,29 @@ const Room = (props) => {
       setMessages((prevMessages) => [...prevMessages, data]);
     });
 
-
-    socketRef.current.on('remove user', socketIdToRemove => {
-      console.log("go command to remove: ", socketIdToRemove);
-      peersRef.current = peersRef.current.filter(user => (user.peerID!=socketIdToRemove));
-      console.log("peer REf: ",peersRef);
-      
-      // const peers = peersRef.current.map(peer => peer.peer)
-      console.log("peers: ", peers);
-      console.log("removed bro bro\n");
-      // console.log("peeeerrrs: ", peers);
-      
-    
-      setPeers(prevPeers => prevPeers.filter(peer => peer.peerSocketId!=socketIdToRemove));
-
+    socketRef.current.on("remove user", (socketIdToRemove) => {
+      peersRef.current = peersRef.current.filter(user => user.peerID !== socketIdToRemove);
+      setPeers(prevPeers => prevPeers.filter(peer => peer.peerSocketId !== socketIdToRemove));
       window.location.reload();
-    })
-
-    
+    });
   }, []);
 
+  function leaveRoom() {
+    const stream = userVideo.current.srcObject;
+    if (stream) {
+      stream.getTracks().forEach((track) => track.stop());
+      userVideo.current.srcObject = null;
+    }
 
+    peersRef.current.forEach((peerObj) => {
+      peerObj.peer.destroy();
+    });
+
+    socketRef.current.emit("leave room", roomID);
+    setPeers((prevPeers) => prevPeers.filter((peer) => peer.peerSocketId !== socketRef.current.id));
+    localStorage.clear();
+    window.location.href = `${window.location.origin}`;
+  }
 
   function createMessageDiv(msg) {
     return (
@@ -228,97 +210,25 @@ const Room = (props) => {
     );
   }
 
-  
-
-  function leaveRoom() {
-    // Stop the user's media streams (video and audio) if they are active
-    console.log("leave room called: 230\n");
-    
-    const stream = userVideo.current.srcObject;
-    if (stream) {
-      stream.getTracks().forEach((track) => track.stop()); // Stop all tracks
-      userVideo.current.srcObject = null; // Clear the video element's srcObject
-    }
-  
-    console.log("leave room called: 238\n");
-
-    // Close all peer connections
-    peersRef.current.forEach((peerObj) => {
-      peerObj.peer.destroy(); // Close the peer connection
-    });
-  
-    // Emit 'leave room' signal to inform other users
-    console.log("emiting leave called: 246\n");
-
-    socketRef.current.emit("leave room", roomID);
-    
-    console.log("returned 250\n");
-    
-    // Remove the leaving peer from the peers list (update the peers state)
-    setPeers((prevPeers) => prevPeers.filter((peer) => peer.peerSocketId !== socketRef.current.id));
-  
-    // Optionally, redirect to the main page or reset the window location
-    window.location.href = `${window.location.origin}`;
-  }
-  
-
   return (
     <div>
-
-      <button onClick={leaveRoom} style={{height:"2rem", position:'fixed', bottom:'1rem', left:'1rem'}}>Leave room</button>
-      <Wrapper style={{ display: "flex", gap: "2rem" }}>
+      <button onClick={leaveRoom} style={{ height: "2rem", position: "fixed", bottom: "1rem", left: "1rem" }}>Leave room</button>
+      <Wrapper>
         <Container>
-          {
-            <h1>{peers.length}</h1>
-          }
           <StyledVideo muted ref={userVideo} autoPlay playsInline />
-          {peers.map((peer, index) => {
-            return <Video key={index} peer={peer} />;
-          })}
+          {peers.map((peer, index) => <Video key={index} peer={peer} />)}
         </Container>
-
         <MessageBox>
-          <div
-            style={{
-              overflowY: "scroll",
-              height: "calc(100% - 3rem)",
-              scrollbarWidth: "none",
-              msOverflowStyle: "none",
-            }}
-          >
+          <div style={{ overflowY: "scroll", height: "calc(100% - 3rem)" }}>
             {messages.map((msg) => createMessageDiv(msg))}
           </div>
-
-          <div
-            style={{
-              border: "2px solid red",
-              height: "3rem",
-              width: "100%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              position: "absolute",
-              bottom: "0",
-              backgroundColor: "white",
-            }}
-          >
-            <input
-              value={inputMessage}
-              onChange={(e) => setInputMessage(e.target.value)}
-              style={{ width: "75%", height: "100%" }}
-              placeholder="Enter your message"
-            />
-            <button
-              style={{ width: "20%", height: "100%" }}
-              onClick={() => (inputMessage.length ? sendMessage() : "")}
-            >
-              Send
-            </button>
+          <div style={{ border: "2px solid red", height: "3rem", display: "flex", alignItems: "center", justifyContent: "space-between", position: "absolute", bottom: "0", backgroundColor: "white" }}>
+            <input value={inputMessage} onChange={(e) => setInputMessage(e.target.value)} style={{ width: "75%", height: "100%" }} placeholder="Enter your message" />
+            <button style={{ width: "20%", height: "100%" }} onClick={() => (inputMessage.length ? sendMessage() : "")}>Send</button>
           </div>
         </MessageBox>
       </Wrapper>
     </div>
-
   );
 };
 
