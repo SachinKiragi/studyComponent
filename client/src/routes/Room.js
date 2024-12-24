@@ -9,27 +9,31 @@ const Wrapper = styled.div`
   width: 100%;
   justify-content: space-evenly;
   padding: 1rem;
-  border: 2px solid yellow;
+  background-color: #f4f6f9;
 `;
 
 const Container = styled.div`
   flex: 0 0 65%;
-  border: 1px solid red;
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
   padding: 1rem;
   height: fit-content;
   justify-content: space-evenly;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
 `;
 
 const MessageBox = styled.div`
   flex: 0 0 25%;
-  border: 1px solid green;
   max-height: 100vh;
   overflow: hidden;
   position: relative;
   padding: 0;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
 
   &::-webkit-scrollbar {
     display: none;
@@ -42,8 +46,10 @@ const MessageBox = styled.div`
 const StyledVideo = styled.video`
   height: 20rem;
   width: 26rem;
-  border: 2px solid black;
+  border-radius: 10px;
   object-fit: cover;
+  border: 2px solid #ddd;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
 `;
 
 const Video = React.memo((props) => {
@@ -64,6 +70,66 @@ const videoConstraints = {
   height: window.innerHeight / 2,
   width: window.innerWidth / 2,
 };
+
+const LeaveButton = styled.button`
+  position: fixed;
+  bottom: 1rem;
+  left: 1rem;
+  padding: 1rem 2rem;
+  background-color: #ff4d4f;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: #d13d3b;
+  }
+`;
+
+const MessageDiv = styled.div`
+  margin: 1rem;
+  padding: 1rem;
+  border-radius: 8px;
+  background-color: #f1f1f1;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+`;
+
+const MessageHeader = styled.h5`
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+`;
+
+const MessageInput = styled.input`
+  width: 75%;
+  padding: 0.8rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  outline: none;
+
+  &:focus {
+    border-color: #007bff;
+  }
+`;
+
+const SendButton = styled.button`
+  width: 20%;
+  padding: 0.8rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: #0056b3;
+  }
+`;
 
 const Room = (props) => {
   const [peers, setPeers] = useState([]);
@@ -201,18 +267,20 @@ const Room = (props) => {
     window.location.href = `${window.location.origin}`;
   }
 
-  function createMessageDiv(msg) {
-    return (
-      <div style={{ margin: "1rem" }} key={msg.from + msg.message}>
-        <h5>:{msg.from}</h5>
-        <h3 style={{ margin: ".5rem" }}>{msg.message}</h3>
-      </div>
-    );
+  function handleEnter(e){
+    console.log(e.key);
+    if(e.key=='Enter'){
+      if(inputMessage.length){
+        sendMessage();
+      }
+    }
+    
   }
+
 
   return (
     <div>
-      <button onClick={leaveRoom} style={{ height: "2rem", position: "fixed", bottom: "1rem", left: "1rem" }}>Leave room</button>
+      <LeaveButton onClick={leaveRoom}>Leave room</LeaveButton>
       <Wrapper>
         <Container>
           <StyledVideo muted ref={userVideo} autoPlay playsInline />
@@ -220,11 +288,16 @@ const Room = (props) => {
         </Container>
         <MessageBox>
           <div style={{ overflowY: "scroll", height: "calc(100% - 3rem)" }}>
-            {messages.map((msg) => createMessageDiv(msg))}
+            {messages.map((msg) => (
+              <MessageDiv key={msg.from + msg.message}>
+                <MessageHeader>{msg.from}</MessageHeader>
+                <p>{msg.message}</p>
+              </MessageDiv>
+            ))}
           </div>
-          <div style={{ border: "2px solid red", height: "3rem", display: "flex", alignItems: "center", justifyContent: "space-between", position: "absolute", bottom: "0", backgroundColor: "white" }}>
-            <input value={inputMessage} onChange={(e) => setInputMessage(e.target.value)} style={{ width: "75%", height: "100%" }} placeholder="Enter your message" />
-            <button style={{ width: "20%", height: "100%" }} onClick={() => (inputMessage.length ? sendMessage() : "")}>Send</button>
+          <div style={{ padding: "1rem", display: "flex", justifyContent: "space-between", position: "absolute", bottom: "0", width: "100%", backgroundColor: "white" }}>
+            <MessageInput onKeyUp={handleEnter} value={inputMessage} onChange={(e) => setInputMessage(e.target.value)} placeholder="Enter your message" />
+            <SendButton onClick={() => inputMessage.length && sendMessage()}>Send</SendButton>
           </div>
         </MessageBox>
       </Wrapper>
