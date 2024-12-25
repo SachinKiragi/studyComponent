@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useState } from 'react';
 import { useHistory } from "react-router-dom";
+import { useName } from '../context/NameContext';
 
 
 const Signup = () => {
@@ -9,12 +10,15 @@ const Signup = () => {
     const [email, setEmail] = useState();
     const history = useHistory();
 
+    const {userName, setUserName} = useName();
+
     const handleSubmit = (e)=>{
         e.preventDefault();
         axios.post('https://192.168.29.188:8181/register', {name, email})
         .then(res => {
             console.log(res);
             // navigate('/login')
+            setUserName(name);
             history.push(`login`);
 
         })

@@ -37,6 +37,7 @@ const CreateRoom = () => {
                 <div className="button-group">
                     <button className="action-button" onClick={create}>Create Room</button>
                     <button className="action-button" onClick={create}>Join Room</button>
+                    <button className="action-button" onClick={()=>window.location.href='login'}>Log Out</button>
                 </div>
             </div>
 

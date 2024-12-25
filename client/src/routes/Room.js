@@ -3,6 +3,7 @@ import io from "socket.io-client";
 import Peer from "simple-peer";
 import styled from "styled-components";
 import Gemini from "../components/Gemini";
+import { useName } from "../context/NameContext";
 
 const Wrapper = styled.div`
   display: flex;
@@ -153,9 +154,13 @@ const Room = (props) => {
   const roomID = props.match.params.roomID;
   const [isGeminiOpen, setIsGeminiOpen] = useState(0);
 
+  const {userName, setUserName} = useName();
+
 
   useEffect(() => {
     // Load stored messages for the room
+    console.log("username: ", userName);
+    
     const storedMessages = JSON.parse(localStorage.getItem(`chatMessages_${roomID}`)) || [];
     setMessages(storedMessages);
 
@@ -209,6 +214,10 @@ const Room = (props) => {
       urls: ["stun:stun.l.google.com:19302", "stun:stun1.l.google.com:19302"],
     },
   ];
+
+  useEffect(()=>{
+    socketRef.current.emit('take my name', userName);
+  },[])
 
   function createPeer(userToSignal, callerID, stream) {
     const peer = new Peer({
@@ -278,7 +287,7 @@ const Room = (props) => {
     socketRef.current.emit("leave room", roomID);
     setPeers((prevPeers) => prevPeers.filter((peer) => peer.peerSocketId !== socketRef.current.id));
     localStorage.clear();
-    window.location.href = `${window.location.origin}`;
+    window.location.href = `/home`;
   }
 
   function handleEnter(e){
@@ -318,6 +327,14 @@ const Room = (props) => {
 `;
 
 
+function handleEnterForUserName(e){
+  console.log("e.key", e.key);
+  
+  if(e.key=='Enter'){
+    userName && socketRef.current.emit('take my name', userName) && setUserName('unknown')
+  }
+}
+
   const messagesEndRef = useRef(null);
 
   // Scroll to the bottom when messages change
@@ -329,7 +346,50 @@ const Room = (props) => {
 
   return (
     <div>
-      
+      <div
+    style={{
+    position: 'absolute',
+    bottom: '1rem',
+    left: '12rem',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.5rem',
+    padding: '0.5rem',
+    backgroundColor: '#f9f9f9',
+    borderRadius: '8px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+  }}
+>
+  <input
+    onKeyUp={handleEnterForUserName}
+    value={userName=='unknown' ? '' : userName}
+    onChange={(e) => setUserName(e.target.value)}
+    placeholder="If your name is showing as unknown to others, please re-enter it"
+    style={{
+      padding: '0.5rem',
+      border: '1px solid #ccc',
+      borderRadius: '4px',
+      flex: '1',
+      fontSize: '14px',
+      width:'30rem'
+    }}
+  />
+  <button
+  onClick={() => userName && socketRef.current.emit('take my name', userName) && setUserName('unknown')}
+    style={{
+      padding: '0.5rem 1rem',
+      backgroundColor: '#007BFF',
+      color: '#fff',
+      border: 'none',
+      borderRadius: '4px',
+      fontSize: '14px',
+      cursor: 'pointer',
+    }}
+  >
+    Submit
+  </button>
+      </div>
+
       <GlowingButton onClick={()=>setIsGeminiOpen(prev => !prev)}>{isGeminiOpen ? "CloseGemini" : "AskGemini"}</GlowingButton>
       <LeaveButton onClick={leaveRoom}>Leave room</LeaveButton>
       <Wrapper style={{display:'flex', gap:'2rem', justifyContent:'space-between'}}>
@@ -351,12 +411,13 @@ const Room = (props) => {
               msOverflowStyle: 'none', /* For Internet Explorer and Edge */
             }}
           >
-            {messages.map((msg) => (
-              <MessageDiv key={msg.from + msg.message} style={{ marginBottom: '1rem' }}>
+            {messages.map((msg) => {
+              if(msg.from==socketRef.current.id) msg.from = 'You';
+              return <MessageDiv key={msg.from + msg.message} style={{ marginBottom: '1rem' }}>
                 <MessageHeader style={{ fontWeight: 'bold' }}>{msg.from}</MessageHeader>
                 <p>{msg.message}</p>
               </MessageDiv>
-            ))}
+            })}
             {/* Invisible div to ensure scrolling */}
             <div ref={messagesEndRef} />
           </div>
@@ -392,8 +453,6 @@ const Room = (props) => {
                 transition: 'background-color 0.3s',
               }}
               onClick={() => inputMessage.length && sendMessage()}
-              onMouseOver={(e) => (e.target.style.backgroundColor = '#45a049')}
-              onMouseOut={(e) => (e.target.style.backgroundColor = '#4CAF50')}
             >
               Send
             </SendButton>

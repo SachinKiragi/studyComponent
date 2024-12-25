@@ -66,6 +66,7 @@ const io = socket(server, {
 const users = {};
 
 const socketToRoom = {};
+const socketToName = {};
 
 io.on('connection', socket => {
     console.log("user joined");
@@ -111,8 +112,14 @@ io.on('connection', socket => {
         console.log("users[roomID]: ", users[roomID]);
         
         users[roomID].forEach(userSocketId => {
-            if(userSocketId!=socket.id)
-            io.to(userSocketId).emit('receive message', {from, message});
+            if(userSocketId!=socket.id){
+
+                const fromInName = socketToName[from];
+                console.log("from: ", from , " in name: ", fromInName);
+                
+                io.to(userSocketId).emit('receive message', {from: fromInName, message});
+                
+            }
         });
     });
 
@@ -141,6 +148,12 @@ io.on('connection', socket => {
         removeSocketIdFromRoom();
     })
 
+    socket.on('take my name', name => {
+        console.log("name: ", name);
+        socketToName[socket.id] = name;
+        
+    })
+
 
     socket.on('disconnect', () => {
         removeSocketIdFromRoom();
@@ -151,5 +164,3 @@ io.on('connection', socket => {
 });
 
 server.listen(process.env.PORT || 8181, () => console.log('server is running on port 8181'));
-
-
