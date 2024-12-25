@@ -6,6 +6,10 @@ const app = express();
 const fs = require('fs');
 app.use(express.static(__dirname))
 
+const mongoose = require('mongoose')
+const cors = require('cors')
+
+
 
 const key = fs.readFileSync('cert.key');
 const cert = fs.readFileSync('cert.crt');
@@ -13,6 +17,42 @@ const cert = fs.readFileSync('cert.crt');
 const server =  https.createServer({key, cert}, app);
 
 const socket = require("socket.io");
+const UserModel = require('./models/user');
+
+
+
+app.use(express.json());
+app.use(cors());
+
+
+mongoose.connect('mongodb://127.0.0.1:27017/userdb').then(() => {
+    console.log('Connected to MongoDB');
+}).catch(err => {
+    console.error('Error connecting to MongoDB:', err);
+});
+
+
+app.post('/register', (req, res)=>{
+    UserModel.create(req.body).
+    then(user => res.json(user))
+    .catch(err => res.json(err))
+})
+
+
+app.post('/login', async(req, res)=>{
+    const {email} = req.body;
+    UserModel.findOne({email: email})
+    .then(user => {
+        if(user){
+            res.json("Success")
+        } else{
+            res.json("The email does not exist in our database")
+        }
+    })
+})
+
+
+
 const io = socket(server, {
     cors: {
         origin: [
