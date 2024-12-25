@@ -143,6 +143,7 @@ const Gemini = () => {
 
   // Function to handle chat messages
   async function run() {
+    setQuery('');
     const newMessages = [...messages, { role: 'user', text: query }];
     setMessages(newMessages);
 
@@ -168,7 +169,6 @@ const Gemini = () => {
     if (e.key === 'Enter') {
       if (query.length) {
         run();
-        setQuery('');
       }
     }
   }
