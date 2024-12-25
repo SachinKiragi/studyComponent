@@ -17,7 +17,7 @@ const io = socket(server, {
     cors: {
         origin: [
             // "https://localhost",
-            "https://192.168.252.167"
+            "https://192.168.29.188"
         ],
         methods:["GET", "POST"]
     }

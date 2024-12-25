@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import io from "socket.io-client";
 import Peer from "simple-peer";
 import styled from "styled-components";
+import Gemini from "../components/Gemini";
 
 const Wrapper = styled.div`
   display: flex;
@@ -23,6 +24,7 @@ const Container = styled.div`
   background-color: #ffffff;
   border-radius: 10px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+      height: 90%;
 `;
 
 const MessageBox = styled.div`
@@ -44,8 +46,8 @@ const MessageBox = styled.div`
 `;
 
 const StyledVideo = styled.video`
-  height: 20rem;
-  width: 26rem;
+  height: 17rem;
+  width: 23rem;
   border-radius: 10px;
   object-fit: cover;
   border: 2px solid #ddd;
@@ -95,6 +97,10 @@ const MessageDiv = styled.div`
   border-radius: 8px;
   background-color: #f1f1f1;
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+  max-width: 100%; /* Ensures the div doesn’t exceed its container */
+  word-wrap: break-word; /* Break long words to fit the width */
+  overflow-wrap: break-word; /* Modern equivalent for wrapping */
+  box-sizing: border-box; /* Include padding in the width */
 `;
 
 const MessageHeader = styled.h5`
@@ -131,6 +137,12 @@ const SendButton = styled.button`
   }
 `;
 
+
+
+
+
+
+
 const Room = (props) => {
   const [peers, setPeers] = useState([]);
   const socketRef = useRef();
@@ -139,6 +151,8 @@ const Room = (props) => {
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
   const roomID = props.match.params.roomID;
+  const [isGeminiOpen, setIsGeminiOpen] = useState(0);
+
 
   useEffect(() => {
     // Load stored messages for the room
@@ -277,29 +291,119 @@ const Room = (props) => {
     
   }
 
+  
+  const GlowingButton = styled.button`
+  position: absolute;
+  right: 1rem;
+  top: 1rem;
+  padding: 10px 20px;
+  background-color: transparent;
+  color: #ff4d4f;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  text-shadow: 0 0 5px rgba(255, 77, 79, 0.8);
+  transition: text-shadow 0.3s ease, transform 0.3s ease;
+  z-index: 2;
+
+  &:hover {
+    text-shadow: 0 0 15px rgba(255, 77, 79, 1);
+    transform: scale(1.1);
+  }
+
+  &:focus {
+    outline: none;
+  }
+`;
+
+
+  const messagesEndRef = useRef(null);
+
+  // Scroll to the bottom when messages change
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages]);
 
   return (
     <div>
+      
+      <GlowingButton onClick={()=>setIsGeminiOpen(prev => !prev)}>{isGeminiOpen ? "CloseGemini" : "AskGemini"}</GlowingButton>
       <LeaveButton onClick={leaveRoom}>Leave room</LeaveButton>
-      <Wrapper>
-        <Container>
+      <Wrapper style={{display:'flex', gap:'2rem', justifyContent:'space-between'}}>
+        <Container style={{maxWidth:'100%',}}>
           <StyledVideo muted ref={userVideo} autoPlay playsInline />
           {peers.map((peer, index) => <Video key={index} peer={peer} />)}
         </Container>
-        <MessageBox>
-          <div style={{ overflowY: "scroll", height: "calc(100% - 3rem)" }}>
+
+        <div style={{ display: 'flex', gap:'1rem', flexDirection: 'row', height: '100%', width:'100%'}}>
+        {
+          !isGeminiOpen ? 
+          <MessageBox style={{ height: '100%', width: '10rem', flex: 1, position: 'relative', padding:'1rem' }}>
+          <div
+             style={{
+              overflowY: 'auto',
+              height: 'calc(100% - 4rem)',
+              padding: '1rem',
+              scrollbarWidth: 'none', /* For Firefox */
+              msOverflowStyle: 'none', /* For Internet Explorer and Edge */
+            }}
+          >
             {messages.map((msg) => (
-              <MessageDiv key={msg.from + msg.message}>
-                <MessageHeader>{msg.from}</MessageHeader>
+              <MessageDiv key={msg.from + msg.message} style={{ marginBottom: '1rem' }}>
+                <MessageHeader style={{ fontWeight: 'bold' }}>{msg.from}</MessageHeader>
                 <p>{msg.message}</p>
               </MessageDiv>
             ))}
+            {/* Invisible div to ensure scrolling */}
+            <div ref={messagesEndRef} />
           </div>
-          <div style={{ padding: "1rem", display: "flex", justifyContent: "space-between", position: "absolute", bottom: "0", width: "100%", backgroundColor: "white" }}>
-            <MessageInput onKeyUp={handleEnter} value={inputMessage} onChange={(e) => setInputMessage(e.target.value)} placeholder="Enter your message" />
-            <SendButton onClick={() => inputMessage.length && sendMessage()}>Send</SendButton>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              bottom: '0',
+              width: '100%',
+            }}
+          >
+            <MessageInput
+              onKeyUp={handleEnter}
+              value={inputMessage}
+              onChange={(e) => setInputMessage(e.target.value)}
+              placeholder="Type a message..."
+              style={{
+                width: '85%',
+                padding: '1rem',
+                borderRadius: '5px',
+                border: '1px solid #ccc',
+              }}
+            />
+            <SendButton
+              style={{
+                width: 'fit-content',
+                backgroundColor: '#4CAF50',
+                color: 'white',
+                borderRadius: '5px',
+                padding: '0.5rem 1rem',
+                border: 'none',
+                cursor: 'pointer',
+                transition: 'background-color 0.3s',
+              }}
+              onClick={() => inputMessage.length && sendMessage()}
+              onMouseOver={(e) => (e.target.style.backgroundColor = '#45a049')}
+              onMouseOut={(e) => (e.target.style.backgroundColor = '#4CAF50')}
+            >
+              Send
+            </SendButton>
           </div>
         </MessageBox>
+        
+                  :
+                  <Gemini style={{flex: 1 }} />
+                }
+          </div>
       </Wrapper>
     </div>
   );
