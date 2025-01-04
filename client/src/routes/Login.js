@@ -8,19 +8,34 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const history = useHistory();
 
+  const validateDeatils = () => {
+    // Regular expression for validating email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    axios.post('https://192.168.29.188:8181/login', { email })
+
+    if(!validateDeatils()){
+      alert("Invalid email\n");
+      return;
+    }
+
+    axios.post('https://192.168.29.167:8181/login', { email })
       .then(res => {
         console.log(res);
         if(res.data=="Success"){
             // navigate('/home'); // Navigate to the dashboard or desired route
             history.push(`/home`);
+        } else{
+          alert('Invalid email or plz signup first');
         }
       })
       .catch(err => {
-        console.error(err);
         alert('Invalid email');
+        console.error(err);
       });
   };
 

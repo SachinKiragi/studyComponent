@@ -12,9 +12,22 @@ const Signup = () => {
 
     const {userName, setUserName} = useName();
 
+    const validateDeatils = () => {
+      // Regular expression for validating email
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(email) && name.length;
+    };
+
+
     const handleSubmit = (e)=>{
         e.preventDefault();
-        axios.post('https://192.168.29.188:8181/register', {name, email})
+
+        if(!validateDeatils()){
+          alert("Invalid details\n");
+          return;
+        }
+
+        axios.post('https://192.168.29.167:8181/register', {name, email})
         .then(res => {
             console.log(res);
             // navigate('/login')

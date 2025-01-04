@@ -24,7 +24,6 @@ const UserModel = require('./models/user');
 app.use(express.json());
 app.use(cors());
 
-
 mongoose.connect('mongodb://127.0.0.1:27017/userdb').then(() => {
     console.log('Connected to MongoDB');
 }).catch(err => {
@@ -36,6 +35,8 @@ app.post('/register', (req, res)=>{
     UserModel.create(req.body).
     then(user => res.json(user))
     .catch(err => res.json(err))
+    console.log("user created successfulyy\n");
+    
 })
 
 
@@ -57,7 +58,7 @@ const io = socket(server, {
     cors: {
         origin: [
             // "https://localhost",
-            "https://192.168.29.188"
+            "https://192.168.29.167"
         ],
         methods:["GET", "POST"]
     }
