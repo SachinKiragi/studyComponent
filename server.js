@@ -53,12 +53,26 @@ app.post('/login', async(req, res)=>{
 })
 
 
+async function getUsernameByEmail(email){
+    let userName = "unknown";
+    await UserModel.findOne({email: email})
+    .then(user => {
+        if(user){
+            console.log("user, ", user.name);
+            userName = user;
+        }
+    })
+
+    return userName;
+}
+
+
 
 const io = socket(server, {
     cors: {
         origin: [
             // "https://localhost",
-            "https://192.168.29.167"
+            "https://192.168.29.188"
         ],
         methods:["GET", "POST"]
     }
@@ -67,7 +81,7 @@ const io = socket(server, {
 const users = {};
 
 const socketToRoom = {};
-const socketToName = {};
+const socketToEmail = {};
 
 io.on('connection', socket => {
     console.log("user joined");
@@ -94,6 +108,8 @@ io.on('connection', socket => {
         const usersInThisRoom = users[roomID].filter(id => id !== socket.id);
 
         socket.emit("all users", usersInThisRoom);
+
+        
     });
 
     socket.on("sending signal", payload => {
@@ -112,13 +128,16 @@ io.on('connection', socket => {
         console.log("70)users, ", users);
         console.log("users[roomID]: ", users[roomID]);
         
-        users[roomID].forEach(userSocketId => {
+        users[roomID].forEach(async userSocketId => {
             if(userSocketId!=socket.id){
 
-                const fromInName = socketToName[from];
+                const fromInEmail = socketToEmail[from];
+                console.log("from in mail: ", fromInEmail);
+                
+                const fromInName = await getUsernameByEmail(fromInEmail)
                 console.log("from: ", from , " in name: ", fromInName);
                 
-                io.to(userSocketId).emit('receive message', {from: fromInName, message});
+                io.to(userSocketId).emit('receive message', {from: fromInName.name||"Unknown", message});
                 
             }
         });
@@ -149,10 +168,19 @@ io.on('connection', socket => {
         removeSocketIdFromRoom();
     })
 
-    socket.on('take my name', name => {
-        console.log("name: ", name);
-        socketToName[socket.id] = name;
+    socket.on('tell everyone that i arrived', async({email, roomID}) => {
+        console.log("email: ", email);
+        socketToEmail[socket.id] = email;
+        console.log('ste: ', socketToEmail);
         
+        if(users[roomID]){
+            const user = await getUsernameByEmail(email);
+            users[roomID].forEach(userSocketId => {
+                console.log(user, "slsl");
+                
+                io.to(userSocketId).emit('user broadcasting his name', user.name||"unknown");
+            });
+        }
     })
 
 

@@ -3,7 +3,7 @@ import io from "socket.io-client";
 import Peer from "simple-peer";
 import styled from "styled-components";
 import Gemini from "../components/Gemini";
-import { useName } from "../context/NameContext";
+import { useEmail } from "../context/EmailContext";
 
 const Wrapper = styled.div`
   display: flex;
@@ -154,22 +154,27 @@ const Room = (props) => {
   const roomID = props.match.params.roomID;
   const [isGeminiOpen, setIsGeminiOpen] = useState(0);
 
-  const {userName, setUserName} = useName();
+  const {emailInContext} = useEmail();
+
+  const [userName, setUserName] = useState("Unknown");
+  const [userWhoJoined, setUserWhoJoined] = useState(false);
 
 
   useEffect(() => {
     // Load stored messages for the room
-    console.log("username: ", userName);
     
     const storedMessages = JSON.parse(localStorage.getItem(`chatMessages_${roomID}`)) || [];
     setMessages(storedMessages);
 
-    socketRef.current = io.connect("https://192.168.29.167:8181");
+    socketRef.current = io.connect("https://192.168.29.188:8181");
     navigator.mediaDevices
       .getUserMedia({ video: videoConstraints, audio: false })
       .then((stream) => {
         userVideo.current.srcObject = stream;
         socketRef.current.emit("join room", roomID);
+
+        socketRef.current.emit('tell everyone that i arrived', {email: emailInContext, roomID});
+
         socketRef.current.on("all users", (users) => {
           const peers = [];
           users.forEach((userID) => {
@@ -215,9 +220,6 @@ const Room = (props) => {
     },
   ];
 
-  useEffect(()=>{
-    socketRef.current.emit('take my name', userName);
-  },[])
 
   function createPeer(userToSignal, callerID, stream) {
     const peer = new Peer({
@@ -254,7 +256,7 @@ const Room = (props) => {
     return peer;
   }
 
-  function sendMessage() {
+  function sendMessage() { 
     const newMessage = { roomID, message: inputMessage, from: socketRef.current.id };
     socketRef.current.emit("send message", newMessage);
     setMessages((prevMessages) => [...prevMessages, newMessage]);
@@ -271,6 +273,18 @@ const Room = (props) => {
       setPeers(prevPeers => prevPeers.filter(peer => peer.peerSocketId !== socketIdToRemove));
       window.location.reload();
     });
+
+    socketRef.current.on('user broadcasting his name', userWhoJoined => {
+      console.log("he joined who: ", userWhoJoined);
+      setUserWhoJoined(userWhoJoined);
+
+      setTimeout(() => {
+          setUserWhoJoined(false);
+      }, 3000);
+      
+    })
+
+
   }, []);
 
   function leaveRoom() {
@@ -296,9 +310,11 @@ const Room = (props) => {
       if(inputMessage.length){
         sendMessage();
       }
-    }
-    
+    } 
   }
+
+
+
 
   
   const GlowingButton = styled.button`
@@ -331,7 +347,7 @@ function handleEnterForUserName(e){
   console.log("e.key", e.key);
   
   if(e.key=='Enter'){
-    userName && socketRef.current.emit('take my name', userName) && setUserName('unknown')
+  //  userName && socketRef.current.emit('take my name', userName) && setUserName('unknown')
   }
 }
 
@@ -346,7 +362,7 @@ function handleEnterForUserName(e){
 
   return (
     <div>
-      <div
+      { <div
     style={{
     position: 'absolute',
     bottom: '1rem',
@@ -361,7 +377,7 @@ function handleEnterForUserName(e){
   }}
 >
   <input
-    onKeyUp={handleEnterForUserName}
+   onKeyUp={handleEnterForUserName}
     value={userName=='unknown' ? '' : userName}
     onChange={(e) => setUserName(e.target.value)}
     placeholder="If your name is showing as unknown to others, please re-enter it"
@@ -388,10 +404,15 @@ function handleEnterForUserName(e){
   >
     Submit
   </button>
-      </div>
+      </div> }
 
       <GlowingButton onClick={()=>setIsGeminiOpen(prev => !prev)}>{isGeminiOpen ? "CloseGemini" : "AskGemini"}</GlowingButton>
       <LeaveButton onClick={leaveRoom}>Leave room</LeaveButton>
+
+      {
+        userWhoJoined && <h3 style={{position:'absolute', bottom:'1.6rem', left:'50rem'}}>{userWhoJoined} Joined</h3>
+      }
+
       <Wrapper style={{display:'flex', gap:'2rem', justifyContent:'space-between'}}>
         <Container style={{maxWidth:'100%',}}>
           <StyledVideo muted ref={userVideo} autoPlay playsInline />

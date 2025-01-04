@@ -3,10 +3,16 @@ import React, { useState} from 'react';
 import { useHistory } from "react-router-dom";
 
 import axios from 'axios';
+import { useEmail } from '../context/EmailContext';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const history = useHistory();
+
+  const {emailInContext, setEmailInContext} = useEmail();
+
+  console.log(emailInContext);
+  
 
   const validateDeatils = () => {
     // Regular expression for validating email
@@ -23,11 +29,13 @@ const Login = () => {
       return;
     }
 
-    axios.post('https://192.168.29.167:8181/login', { email })
+    axios.post('https://192.168.29.188:8181/login', { email })
       .then(res => {
         console.log(res);
         if(res.data=="Success"){
             // navigate('/home'); // Navigate to the dashboard or desired route
+            setEmailInContext(email);
+            console.log("emai: ", email);
             history.push(`/home`);
         } else{
           alert('Invalid email or plz signup first');
