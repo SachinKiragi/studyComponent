@@ -154,10 +154,25 @@ const Room = (props) => {
   const roomID = props.match.params.roomID;
   const [isGeminiOpen, setIsGeminiOpen] = useState(0);
 
-  const {emailInContext} = useEmail();
+  const {emailInContext, setEmailInContext} = useEmail();
 
   const [userName, setUserName] = useState("Unknown");
   const [userWhoJoined, setUserWhoJoined] = useState(false);
+
+  const emailRef = useRef(emailInContext); // Persist emailInContext across renders
+
+  useEffect(() => {
+    if (emailInContext === "unknown") {
+      const emailFromLocalStorage = window.localStorage.getItem("myEmail");
+      setEmailInContext(emailFromLocalStorage);
+      emailRef.current = emailFromLocalStorage; // Persist the value in ref
+    }
+  }, [emailInContext]);
+  
+  useEffect(() => {
+    console.log("Persisted email:", emailRef.current); // Always holds the most recent value
+  }, []);
+  
 
 
   useEffect(() => {
@@ -173,7 +188,7 @@ const Room = (props) => {
         userVideo.current.srcObject = stream;
         socketRef.current.emit("join room", roomID);
 
-        socketRef.current.emit('tell everyone that i arrived', {email: emailInContext, roomID});
+        socketRef.current.emit('tell everyone that i arrived', {email: emailRef.current, roomID});
 
         socketRef.current.on("all users", (users) => {
           const peers = [];
@@ -300,7 +315,11 @@ const Room = (props) => {
 
     socketRef.current.emit("leave room", roomID);
     setPeers((prevPeers) => prevPeers.filter((peer) => peer.peerSocketId !== socketRef.current.id));
-    localStorage.clear();
+    let myEmail = window.localStorage.getItem("myEmail");
+    window.localStorage.clear(); // Clears all other localStorage data
+    window.localStorage.setItem("myEmail", myEmail); // Restore the myEmail value
+    console.log("Restored myEmail:", window.localStorage.getItem("myEmail"));
+
     window.location.href = `/home`;
   }
 
@@ -347,7 +366,7 @@ function handleEnterForUserName(e){
   console.log("e.key", e.key);
   
   if(e.key=='Enter'){
-  //  userName && socketRef.current.emit('take my name', userName) && setUserName('unknown')
+   userName && socketRef.current.emit('take my name', userName) && setUserName('unknown')
   }
 }
 
@@ -378,9 +397,9 @@ function handleEnterForUserName(e){
 >
   <input
    onKeyUp={handleEnterForUserName}
-    value={userName=='unknown' ? '' : userName}
-    onChange={(e) => setUserName(e.target.value)}
-    placeholder="If your name is showing as unknown to others, please re-enter it"
+    value={userName=='Unknown' ? '' : userName}
+    onChange={(e) => setEmailInContext(e.target.value)}
+    placeholder="If your name is showing as unknown to others, please enter your email"
     style={{
       padding: '0.5rem',
       border: '1px solid #ccc',

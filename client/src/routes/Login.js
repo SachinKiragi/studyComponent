@@ -36,6 +36,10 @@ const Login = () => {
             // navigate('/home'); // Navigate to the dashboard or desired route
             setEmailInContext(email);
             console.log("emai: ", email);
+            window.localStorage.setItem("myEmail", email);
+            console.log("done");
+            console.log(window.localStorage.getItem("myEmail"));
+            setEmailInContext(window.localStorage.getItem("myEmail"));
             history.push(`/home`);
         } else{
           alert('Invalid email or plz signup first');

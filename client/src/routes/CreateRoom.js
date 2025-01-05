@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import '../styles/CreateRoom.css'
+import { useEmail } from "../context/EmailContext";
 
 const CreateRoom = () => {
     const [roomName, setRoomName] = useState("");
     const history = useHistory();
+
+    const {emailInContext, setEmailInContext} = useEmail();
 
     function create() {
         if (roomName.trim()) {
@@ -15,8 +18,14 @@ const CreateRoom = () => {
     }
 
     useEffect(()=>{
-        window.localStorage.clear();
-    })
+        let myEmail = window.localStorage.getItem("myEmail");
+            window.localStorage.clear(); // Clears all other localStorage data
+            window.localStorage.setItem("myEmail", myEmail); // Restore the myEmail value
+            console.log("Restored myEmail:", window.localStorage.getItem("myEmail"));
+
+            setEmailInContext(myEmail);
+
+    }, [])
 
     return (
         <div className="create-room-container">
