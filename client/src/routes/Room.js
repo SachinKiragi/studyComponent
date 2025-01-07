@@ -155,6 +155,7 @@ const Room = (props) => {
   const [isGeminiOpen, setIsGeminiOpen] = useState(0);
 
   const {emailInContext, setEmailInContext} = useEmail();
+  const [emailThroughInput, setEmailThroughInput] = useState('');
 
   const [userName, setUserName] = useState("Unknown");
   const [userWhoJoined, setUserWhoJoined] = useState(false);
@@ -371,7 +372,7 @@ function handleEnterForUserName(e){
   console.log("e.key", e.key);
   
   if(e.key=='Enter'){
-   userName && socketRef.current.emit('take my name', userName) && setUserName('unknown')
+   
   }
 }
 
@@ -386,55 +387,12 @@ function handleEnterForUserName(e){
 
   return (
     <div>
-      { <div
-    style={{
-    position: 'absolute',
-    bottom: '1rem',
-    left: '12rem',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '0.5rem',
-    padding: '0.5rem',
-    backgroundColor: '#f9f9f9',
-    borderRadius: '8px',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-  }}
->
-  <input
-   onKeyUp={handleEnterForUserName}
-    value={userName=='Unknown' ? '' : userName}
-    onChange={(e) => setEmailInContext(e.target.value)}
-    placeholder="If your name is showing as unknown to others, please enter your email"
-    style={{
-      padding: '0.5rem',
-      border: '1px solid #ccc',
-      borderRadius: '4px',
-      flex: '1',
-      fontSize: '14px',
-      width:'30rem'
-    }}
-  />
-  <button
-  onClick={() => userName && socketRef.current.emit('take my name', userName) && setUserName('unknown')}
-    style={{
-      padding: '0.5rem 1rem',
-      backgroundColor: '#007BFF',
-      color: '#fff',
-      border: 'none',
-      borderRadius: '4px',
-      fontSize: '14px',
-      cursor: 'pointer',
-    }}
-  >
-    Submit
-  </button>
-      </div> }
 
       <GlowingButton onClick={()=>setIsGeminiOpen(prev => !prev)}>{isGeminiOpen ? "CloseGemini" : "AskGemini"}</GlowingButton>
       <LeaveButton onClick={leaveRoom}>Leave room</LeaveButton>
 
       {
-        userWhoJoined && <h3 style={{position:'absolute', bottom:'1.6rem', left:'50rem'}}>{userWhoJoined} Joined</h3>
+        userWhoJoined && <h3 style={{position:'absolute', bottom:'1.8rem', left:'50rem'}}>{userWhoJoined} Joined</h3>
       }
 
       <Wrapper style={{display:'flex', gap:'2rem', justifyContent:'space-between'}}>
