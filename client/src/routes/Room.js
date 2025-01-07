@@ -188,6 +188,11 @@ const Room = (props) => {
         userVideo.current.srcObject = stream;
         socketRef.current.emit("join room", roomID);
 
+        socketRef.current.on('room full', ()=>{
+          alert("plz select name which is more accurate to your interest cause the room with this name is full");
+          window.location.href = '/home';
+        })
+
         socketRef.current.emit('tell everyone that i arrived', {email: emailRef.current, roomID});
 
         socketRef.current.on("all users", (users) => {
