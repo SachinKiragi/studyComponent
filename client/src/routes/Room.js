@@ -182,7 +182,7 @@ const Room = (props) => {
     const storedMessages = JSON.parse(localStorage.getItem(`chatMessages_${roomID}`)) || [];
     setMessages(storedMessages);
 
-    socketRef.current = io.connect(`https://${process.env.REACT_APP_IP}:8181`);
+    socketRef.current = io.connect(`${process.env.REACT_APP_BASE_URL}:8181`);
     navigator.mediaDevices
       .getUserMedia({ video: videoConstraints, audio: false })
       .then((stream) => {

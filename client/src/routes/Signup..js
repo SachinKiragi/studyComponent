@@ -25,7 +25,7 @@ const Signup = () => {
           return;
         }
 
-        axios.post(`https://${process.env.REACT_APP_IP}:8181/register`, {name, email})
+        axios.post(`${process.env.REACT_APP_BASE_URL}:8181/register`, {name, email})
         .then(res => {
             console.log(res);
             // navigate('/login')
