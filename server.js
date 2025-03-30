@@ -24,14 +24,12 @@ const UserModel = require('./models/user');
 app.use(express.json());
 app.use(cors());
 
-const db = process.env.MONGOURI;
 
-mongoose.connect(db).then(() => {
-    console.log('Connected to MongoDB');
-}).catch(err => {
-    console.error('Error connecting to MongoDB:', err);
-});
-
+mongoose.connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  }).then(() => console.log("Connected to MongoDB"))
+    .catch(err => console.error("MongoDB connection error:", err));
 
 app.post('/register', (req, res)=>{
     UserModel.create(req.body).
@@ -194,5 +192,5 @@ io.on('connection', socket => {
     });
 
 });
-
-server.listen(process.env.PORT || 8181, () => console.log('server is running on port 8181'));
+const PORT = process.env.PORT || 8181;
+server.listen(process.env.PORT || 8181, () => console.log(`server is running on port ${PORT}`));
