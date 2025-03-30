@@ -9,8 +9,7 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "mongoose": "^8.9.2",
-    "socket.io": "^2.3.0",
-    "start": "serve -s dist"
+    "socket.io": "^2.3.0"
   },
   "scripts": {
     "start": "cross-env PROD=true node server.js",
