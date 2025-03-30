@@ -29,7 +29,7 @@ const Login = () => {
       return;
     }
 
-    axios.post('https://192.168.29.188:8181/login', { email })
+    axios.post(`https://${process.env.REACT_APP_IP}:8181/login`, { email })
       .then(res => {
         console.log(res);
         if(res.data=="Success"){

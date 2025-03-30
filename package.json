@@ -12,7 +12,6 @@
     "socket.io": "^2.3.0"
   },
   "scripts": {
-    "start": "cross-env PROD=true node server.js",
-    "postinstall": "cd ./client && yarn"
+    "start": "cross-env PROD=true node server.js"
   }
 }

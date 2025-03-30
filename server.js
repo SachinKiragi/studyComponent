@@ -24,7 +24,9 @@ const UserModel = require('./models/user');
 app.use(express.json());
 app.use(cors());
 
-mongoose.connect('mongodb://127.0.0.1:27017/userdb').then(() => {
+const db = process.env.MONGOURI;
+
+mongoose.connect(db).then(() => {
     console.log('Connected to MongoDB');
 }).catch(err => {
     console.error('Error connecting to MongoDB:', err);
@@ -72,7 +74,8 @@ const io = socket(server, {
     cors: {
         origin: [
             // "https://localhost",
-            "https://192.168.29.188"
+            // "https://192.168.29.188"
+            "*"
         ],
         methods:["GET", "POST"]
     }
