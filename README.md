@@ -142,13 +142,6 @@ The application follows a client-server architecture:
 
 This project is licensed under the MIT License - see the LICENSE file for details.  
 
-## Contributors  
-
-- Sachin Kiragi - Lead Developer  
-- Ashutosh Naryagol - Developer  
-- Shailesh Pawale - Developer  
-- Kadappa Savalagi - Developer  
-
 ## Troubleshooting  
 
 If you encounter SSL certificate issues during development:  
