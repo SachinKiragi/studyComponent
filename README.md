@@ -1,25 +1,23 @@
-# Video Conferencing Application
+# 📚 GroupStudy Platform - Real-Time Study Collaboration  
 
-## Project Overview
+## 🚀 Project Overview  
+GroupStudy Platform is a **real-time video conferencing application** designed for **seamless collaborative learning**. Unlike traditional platforms, it allows users to **instantly join study groups by simply typing a subject name**, eliminating the need for invite links. Users can **create rooms, join ongoing study sessions, and interact through video calls and chat messaging**, making group study more accessible and engaging.  
 
-GroupStudy Platform is a real-time video conferencing application designed for seamless collaborative learning. It allows users to instantly join study groups by simply typing a subject name, eliminating the need for invite links. Users can create rooms, join ongoing sessions, and interact through video calls and chat messaging, making group study more accessible and effective.
+## ❗ Problem Statement  
+In today’s digital learning environment, students face **limited interactive learning opportunities** and often feel **isolated in virtual classrooms**. Existing platforms lack **seamless study-based group collaboration**, relying on **manual invite links** and **complex setups** that hinder accessibility. **GroupStudy Platform** solves this by offering an intuitive, **subject-based joining system**, where students can **search, join, or create study rooms effortlessly**, fostering a more **engaging and interactive learning experience**.  
 
-### Problem Statement
+## ✨ Key Features  
+🔑 **User Authentication** – Secure signup and login  
+🎓 **Instant Room Joining** – Type a subject name to join without invite links  
+🎥 **Real-time Video Conferencing** – Connect with multiple students via WebRTC  
+💬 **Chat Messaging** – Text-based communication alongside video calls  
+🏷 **User Presence Indicators** – See who joins or leaves the study group  
+📜 **Persistent Chat History** – Messages remain for session duration  
+🤖 **AI-Powered Doubt Resolution (Gemini AI)** – Get instant answers to academic doubts in real-time
 
-In today’s digital world, students face limited interactive learning and isolation in virtual classrooms. Existing platforms lack seamless group collaboration and often require complex setups or paid services. GroupStudy Platform solves this by providing a hassle-free, real-time communication tool where users can instantly search, join, or create study groups using just a subject name, enabling effortless and engaging learning experiences.
+## 🛠 Dependencies  
+### Server-Side Dependencies 
 
-### Key Features
-
-- *User Authentication*: Secure signup and login functionality
-- *Room Creation*: Create custom rooms for video conferencing
-- *Real-time Video Streaming*: Connect with multiple users through video
-- *Chat Messaging*: Text-based communication alongside video
-- *Persistent Chat History*: Chat messages are saved for the duration of the session
-- *User Presence Indicators*: See who has joined or left the room
-
-## Dependencies
-
-### Server-Side Dependencies
 
 ```
 json
@@ -55,124 +53,105 @@ json
 }
 ```
 
-## Setup Instructions
+## Setup Instructions  
 
-### Prerequisites
 
-- Node.js (v12.0 or higher)
-- MongoDB (local installation or MongoDB Atlas account)
-- Modern web browser (Chrome, Firefox, Edge recommended)
+### Installation  
 
-### Installation
+1. **Clone the repository**  
+   git clone <repository-url>  
+   cd group-study-platform  
 
-1. *Clone the repository*
-   bash
-   git clone <repository-url>
-   cd mini_project
-   
+2. **Install server dependencies**  
+   npm install  
 
-2. *Install server dependencies*
-   bash
-   npm install
-   
+3. **Install client dependencies**  
+   cd client  
+   npm install  
+   cd ..  
 
-3. *Install client dependencies*
-   bash
-   cd client
-   npm install
-   cd ..
-   
+4. **Environment Configuration**  
 
-4. *Environment Configuration*
-   
-   Create a .env file in the root directory with the following variables:
-   
-   MONGO_URI=mongodb://127.0.0.1:27017/userdb
-   ### For production, use your MongoDB Atlas connection string
-   ### MONGO_URI=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/userdb
-   
+   Create a .env file in the root directory with the following variables:  
 
-5. *Start the server*
-   bash
-   npm start
-   
+   MONGO_URI=mongodb://127.0.0.1:27017/groupstudydb  
+   ### For production, use your MongoDB Atlas connection string  
+   ### MONGO_URI=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/groupstudydb  
 
-6. *Start the client (in a separate terminal)*
-   bash
-   cd client
-   npm start
-   
+5. **Start the server**  
+   npm start  
 
-7. *Access the application*
-   
-   Open your browser and navigate to:
-   
-   https://your_ip:3000
-   
-   or
-   
-   https://localhost:3000
-   
+6. **Start the client (in a separate terminal)**  
+   cd client  
+   npm start  
 
-### Usage Guide
+7. **Access the application**  
 
-1. *Sign Up*
-   - Navigate to the signup page
-   - Enter your name and email
-   - Click "Sign Up"
+   Open your browser and navigate to:  
 
-2. *Login*
-   - Navigate to the login page
-   - Enter your registered email
-   - Click "Login"
+   https://your_ip:3000  
 
-3. *Create a Room*
-   - After logging in, you'll be directed to the create room page
-   - Click "Create Room" to generate a new room
+   or  
 
-4. *Join a Room*
-   - Share the room URL with others
-   - Others can join by navigating to the URL
-   - Alternatively, they can enter the room ID on the join room page
+   https://localhost:3000  
 
-5. *Using the Video Conference*
-   - Grant camera and microphone permissions when prompted
-   - Use the chat feature on the right side to send messages
-   - All participants in the room will be visible in the video grid
+## Usage Guide  
 
-## Architecture
+1. **Sign Up**  
+   - Navigate to the signup page  
+   - Enter your name and email  
+   - Click "Sign Up"  
 
-The application follows a client-server architecture:
+2. **Login**  
+   - Navigate to the login page  
+   - Enter your registered email  
+   - Click "Login"  
 
-- *Frontend*: React.js application with Socket.io client for real-time communication
-- *Backend*: Node.js with Express server, Socket.io for WebSocket connections
-- *Database*: MongoDB for user data storage
-- *Real-time Communication*: WebRTC (via simple-peer) for peer-to-peer video streaming
+3. **Create a Study Room**  
+   - After logging in, you'll be directed to the create room page  
+   - Enter the subject name and click "Create Room"  
 
-## Future Plans
+4. **Join a Study Room**  
+   - Search for an existing study room by subject name  
+   - Share the room URL with others to invite them  
 
-- Enables students to code collaboratively in real-time. Provide guidance  on syntax errors with explanations rather than AI-generated solutions,  promoting learning over shortcuts.
-- Add end-to-end encryption for enhanced security
-- Implement screen sharing functionality
-- Add recording capabilities for video sessions
-- Develop mobile applications for iOS and Android
-- Implement user profiles with customizable settings
-- Add virtual background options
+5. **Using the Study Group Platform**  
+   - Grant camera and microphone permissions when prompted  
+   - Use the chat feature to interact with other participants  
+   - Collaborate using real-time video and text chat  
 
-## License
+## Architecture  
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+The application follows a client-server architecture:  
 
-## Contributors
+- **Frontend**: React.js application with Socket.io client for real-time communication  
+- **Backend**: Node.js with Express server, Socket.io for WebSocket connections  
+- **Database**: MongoDB for user and study room storage  
+- **Real-time Communication**: WebRTC (via simple-peer) for peer-to-peer video streaming  
 
-- Sachin Kiragi - Lead Developer
-- Ashutosh Naryagol -Developer
-- Shailesh Pawale - Developer
-- Kadappa Savalagi -Developer
+## Future Plans  
 
-## Troubleshooting
+- Enable real-time collaborative coding with syntax guidance  
+- Implement screen sharing functionality  
+- Add recording capabilities for study sessions  
+- Develop mobile applications for iOS and Android  
+- Implement user profiles with customizable settings  
+- Add virtual background options  
 
-If you encounter SSL certificate issues during development:
-1. For development purposes, the application can run on HTTP instead of HTTPS
-2. If using HTTPS, you may need to accept self-signed certificates in your browser
+## License  
+
+This project is licensed under the MIT License - see the LICENSE file for details.  
+
+## Contributors  
+
+- Sachin Kiragi - Lead Developer  
+- Ashutosh Naryagol - Developer  
+- Shailesh Pawale - Developer  
+- Kadappa Savalagi - Developer  
+
+## Troubleshooting  
+
+If you encounter SSL certificate issues during development:  
+1. For development purposes, the application can run on HTTP instead of HTTPS  
+2. If using HTTPS, you may need to accept self-signed certificates in your browser  
 3. For API requests, the application includes options to bypass SSL certificate validation in development mode
