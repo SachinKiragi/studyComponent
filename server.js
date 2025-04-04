@@ -79,26 +79,7 @@ const io = socket(server, {
     }
 });
 
-const users = {
-    "dsa": [1,2],
-    "ab": [11,32],
-    "dssa": [1,2],
-    "aab": [11,32],
-    "desa": [1,2],
-    "eeab": [11,32],
-    "dexsa": [1,2],
-    "ansb": [11,32],
-    "dsfsa": [1,2],
-    "asfb": [11,32],
-    "dfefsa": [1,2],
-    "asdsb": [11,32],
-    "dsfdesa": [1,2],
-    "ab": [11,32],
-    "fdfddsa": [1,2],
-    "asdsdb": [11,32],
-    "ddfssa": [1,2],
-    "asfdb": [11,32],
-};
+const users = {};
 
 
 app.post("/get-rooms", async(req, res)=>{
