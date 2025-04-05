@@ -2,11 +2,11 @@ require('dotenv').config();
 const { log } = require('console');
 const express = require("express");
 const https = require("https");
+const path = require('path')
 const http = require("http");
 const app = express();
 const fs = require('fs');
 app.use(express.static(__dirname))
-const path = require('path')
 
 const mongoose = require('mongoose')
 const cors = require('cors')
