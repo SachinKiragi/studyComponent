@@ -29,7 +29,12 @@ const Login = () => {
       return;
     }
 
-    axios.post(`${process.env.REACT_APP_BASE_URL}:8181/login`, { email })
+    const apiUrl = process.env.NODE_ENV === 'production'
+    ? '/login' // Relative URL in production
+    : `${process.env.REACT_APP_BASE_URL}:8181/login`;
+    console.log("apiUrl ", apiUrl, " email: ", email);
+
+    axios.post(apiUrl, { email })
       .then(res => {
         console.log(res);
         if(res.data=="Success"){

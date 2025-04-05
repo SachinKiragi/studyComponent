@@ -1,7 +1,6 @@
 import axios from 'axios';
 import React, { useState } from 'react';
 import { useHistory } from "react-router-dom";
-import { useName } from '../context/EmailContext';
 
 
 const Signup = () => {
@@ -25,7 +24,12 @@ const Signup = () => {
           return;
         }
 
-        axios.post(`${process.env.REACT_APP_BASE_URL}:8181/register`, {name, email})
+        const apiUrl = process.env.NODE_ENV === 'production'
+        ? '/register' // Relative URL in production
+        : `${process.env.REACT_APP_BASE_URL}:8181/register`;
+        console.log("name: ", name, " email: ", email);
+        
+        axios.post(apiUrl, {name, email})
         .then(res => {
             console.log(res);
             // navigate('/login')

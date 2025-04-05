@@ -182,7 +182,11 @@ const Room = (props) => {
     const storedMessages = JSON.parse(localStorage.getItem(`chatMessages_${roomID}`)) || [];
     setMessages(storedMessages);
 
-    socketRef.current = io.connect(`${process.env.REACT_APP_BASE_URL}:8181`);
+    const socketUrl = process.env.NODE_ENV === 'production' 
+      ? '' // Empty string means connect to same host
+      : `${process.env.REACT_APP_BASE_URL}:8181`;
+
+    socketRef.current = io.connect(socketUrl);
     navigator.mediaDevices
       .getUserMedia({ video: videoConstraints, audio: false })
       .then((stream) => {

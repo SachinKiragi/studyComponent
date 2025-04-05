@@ -24,7 +24,11 @@ const CreateRoom = () => {
             console.log("Restored myEmail:", window.localStorage.getItem("myEmail"));
 
             setEmailInContext(myEmail);
-            axios.post(`${process.env.REACT_APP_BASE_URL}:8181/get-rooms`).then(({data}) => {                
+            const apiUrl = process.env.NODE_ENV === 'production'
+            ? '/get-rooms' // Relative URL in production
+            : `${process.env.REACT_APP_BASE_URL}:8181/get-rooms`;
+
+            axios.post(apiUrl).then(({data}) => {                
                 console.log("hejd");
                 console.log(data);
                 setExistingRooms(data);

@@ -2,6 +2,7 @@ require('dotenv').config();
 const { log } = require('console');
 const express = require("express");
 const https = require("https");
+const http = require("http");
 const app = express();
 const fs = require('fs');
 app.use(express.static(__dirname))
@@ -14,15 +15,28 @@ const cors = require('cors')
 const key = fs.readFileSync('cert.key');
 const cert = fs.readFileSync('cert.crt');
 
-const server =  https.createServer({key, cert}, app);
+let server;
 
 const socket = require("socket.io");
 const UserModel = require('./models/user');
 
+if (process.env.NODE_ENV === 'production') {
+    app.use(express.static(path.join(__dirname, 'client/build')));
+  } else {
+    app.use(express.static(__dirname));
+  }
 
-
-app.use(express.json());
 app.use(cors());
+app.use(express.json());
+
+if (process.env.NODE_ENV === 'production') {
+    server = http.createServer(app);
+  } else {
+    const key = fs.readFileSync('cert.key');
+    const cert = fs.readFileSync('cert.crt');
+    server = https.createServer({key, cert}, app);
+  }
+  
 
 
 mongoose.connect(process.env.MONGO_URI, {
@@ -32,6 +46,8 @@ mongoose.connect(process.env.MONGO_URI, {
     .catch(err => console.error("MongoDB connection error:", err));
 
 app.post('/register', (req, res)=>{
+    console.log("req.bosy in register: ", req.body);
+    
     UserModel.create(req.body).
     then(user => res.json(user))
     .catch(err => res.json(err))
@@ -41,6 +57,8 @@ app.post('/register', (req, res)=>{
 
 
 app.post('/login', async(req, res)=>{
+    console.log("rew.bodt: ", req.body);
+    
     const {email} = req.body;
     UserModel.findOne({email: email})
     .then(user => {
