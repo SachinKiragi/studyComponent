@@ -6,6 +6,7 @@ const http = require("http");
 const app = express();
 const fs = require('fs');
 app.use(express.static(__dirname))
+const path = require('path')
 
 const mongoose = require('mongoose')
 const cors = require('cors')
