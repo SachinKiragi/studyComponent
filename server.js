@@ -46,6 +46,16 @@ mongoose.connect(process.env.MONGO_URI, {
   }).then(() => console.log("Connected to MongoDB"))
     .catch(err => console.error("MongoDB connection error:", err));
 
+    app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+});
+
+
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+  });
+  
+
 app.post('/register', (req, res)=>{
     console.log("req.bosy in register: ", req.body);
     
