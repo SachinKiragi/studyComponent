@@ -188,7 +188,7 @@ const Room = (props) => {
 
     socketRef.current = io.connect(socketUrl);
     navigator.mediaDevices
-      .getUserMedia({ video: videoConstraints, audio: false })
+      .getUserMedia({ video: videoConstraints, audio: true })
       .then((stream) => {
         userVideo.current.srcObject = stream;
         socketRef.current.emit("join room", roomID);
