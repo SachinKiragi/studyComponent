@@ -3,15 +3,15 @@ import React, { useState} from 'react';
 import { useHistory } from "react-router-dom";
 
 import axios from 'axios';
-import { useEmail } from '../context/EmailContext';
+import { useName } from '../context/NameContext';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const history = useHistory();
 
-  const {emailInContext, setEmailInContext} = useEmail();
+  const {nameInContext, setNameInContext} = useName();
 
-  console.log(emailInContext);
+  console.log(nameInContext);
   
 
   const validateDeatils = () => {
@@ -39,12 +39,12 @@ const Login = () => {
         console.log(res);
         if(res.data=="Success"){
             // navigate('/home'); // Navigate to the dashboard or desired route
-            setEmailInContext(email);
+            setNameInContext(email);
             console.log("emai: ", email);
             window.localStorage.setItem("myEmail", email);
             console.log("done");
             console.log(window.localStorage.getItem("myEmail"));
-            setEmailInContext(window.localStorage.getItem("myEmail"));
+            setNameInContext(window.localStorage.getItem("myEmail"));
             history.push(`/home`);
         } else{
           alert('Invalid email or plz signup first');

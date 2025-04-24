@@ -158,23 +158,23 @@ io.on('connection', socket => {
     });
 
 
-    socket.on("send message", ({ roomID, message }) => {
+    socket.on("send message", ({ roomID, message, from }) => {
         console.log("67)roomiID: ", roomID, " message: ", message);
         console.log("68)from sockteid: ", socket.id);
-        const from = socket.id;
+        // const from = socket.id;
         console.log("70)users, ", users);
         console.log("users[roomID]: ", users[roomID]);
         
         users[roomID].forEach(async userSocketId => {
             if(userSocketId!=socket.id){
 
-                const fromInEmail = socketToEmail[from];
-                console.log("from in mail: ", fromInEmail);
+                // const fromInEmail = socketToEmail[from];
+                // console.log("from in mail: ", fromInEmail);
                 
-                const fromInName = await getUsernameByEmail(fromInEmail)
-                console.log("from: ", from , " in name: ", fromInName);
+                // const fromInName = await getUsernameByEmail(fromInEmail)
+                // console.log("from: ", from , " in name: ", fromInName);
                 
-                io.to(userSocketId).emit('receive message', {from: fromInName.name||"Unknown", message});
+                io.to(userSocketId).emit('receive message', {from: from||"Unknown", message});
                 
             }
         });
@@ -205,17 +205,16 @@ io.on('connection', socket => {
         removeSocketIdFromRoom();
     })
 
-    socket.on('tell everyone that i arrived', async({email, roomID}) => {
-        console.log("email: ", email);
-        socketToEmail[socket.id] = email;
+    socket.on('tell everyone that i arrived', async({name, roomID}) => {
+        console.log("email209: ", name);
+        socketToEmail[socket.id] = name;
         console.log('ste: ', socketToEmail);
         
         if(users[roomID]){
-            const user = await getUsernameByEmail(email);
+            const user = name;
             users[roomID].forEach(userSocketId => {
-                console.log(user, "slsl");
-                
-                io.to(userSocketId).emit('user broadcasting his name', user.name||"unknown");
+                console.log(name, "slsl");
+                io.to(userSocketId).emit('user broadcasting his name', name||"unknown");
             });
         }
     })

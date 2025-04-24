@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import '../styles/CreateRoom.css'
-import { useEmail } from "../context/EmailContext";
+import { useName } from "../context/NameContext";
 import axios from 'axios'
 const CreateRoom = () => {
     const [roomName, setRoomName] = useState("");
     const history = useHistory();
     const [existingRooms, setExistingRooms] = useState([{}]);
-    const {emailInContext, setEmailInContext} = useEmail();
+    const {nameInContext, setNameInContext} = useName();
 
     function create() {
         if (roomName.trim()) {
@@ -17,13 +17,20 @@ const CreateRoom = () => {
         }
     }
 
+    useEffect(() => {
+        console.log("Name in context updated: ", nameInContext);
+      }, [nameInContext]);
+      
+
     useEffect(()=>{
+        console.log("name: ", nameInContext);
+        
         let myEmail = window.localStorage.getItem("myEmail");
             window.localStorage.clear(); // Clears all other localStorage data
             window.localStorage.setItem("myEmail", myEmail); // Restore the myEmail value
             console.log("Restored myEmail:", window.localStorage.getItem("myEmail"));
 
-            setEmailInContext(myEmail);
+            // setNameInContext(myEmail);
             const apiUrl = process.env.NODE_ENV === 'production'
             ? '/get-rooms' // Relative URL in production
             : `${process.env.REACT_APP_BASE_URL}:8181/get-rooms`;

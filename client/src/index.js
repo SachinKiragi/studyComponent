@@ -3,13 +3,13 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-import { EmailProvider } from './context/EmailContext';
+import { NameProvider } from './context/NameContext';
 
 ReactDOM.render(
   <React.StrictMode>
-    <EmailProvider>
+    <NameProvider>
       <App />
-    </EmailProvider>
+    </NameProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );

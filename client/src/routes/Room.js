@@ -3,7 +3,7 @@ import io from "socket.io-client";
 import Peer from "simple-peer";
 import styled from "styled-components";
 import Gemini from "../components/Gemini";
-import { useEmail } from "../context/EmailContext";
+import { useName } from "../context/NameContext";
 
 const Wrapper = styled.div`
   display: flex;
@@ -154,23 +154,25 @@ const Room = (props) => {
   const roomID = props.match.params.roomID;
   const [isGeminiOpen, setIsGeminiOpen] = useState(0);
 
-  const {emailInContext, setEmailInContext} = useEmail();
+  const {nameInContext, setNameInContext} = useName();
   const [emailThroughInput, setEmailThroughInput] = useState('');
 
   const [userName, setUserName] = useState("Unknown");
   const [userWhoJoined, setUserWhoJoined] = useState(false);
 
-  const emailRef = useRef(emailInContext); // Persist emailInContext across renders
+  const emailRef = useRef(nameInContext); // Persist nameInContext across renders
 
-  useEffect(() => {
-    if (emailInContext === "unknown") {
-      const emailFromLocalStorage = window.localStorage.getItem("myEmail");
-      setEmailInContext(emailFromLocalStorage);
-      emailRef.current = emailFromLocalStorage; // Persist the value in ref
-    }
-  }, [emailInContext]);
+  // useEffect(() => {
+  //   if (nameInContext === "unknown") {
+  //     const emailFromLocalStorage = window.localStorage.getItem("myEmail");
+  //     setNameInContext(emailFromLocalStorage);
+  //     emailRef.current = emailFromLocalStorage; // Persist the value in ref
+  //   }
+  // }, [nameInContext]);
   
   useEffect(() => {
+    console.log("NAMEINCONTEXT: ", nameInContext);
+    
     console.log("Persisted email:", emailRef.current); // Always holds the most recent value
   }, []);
   
@@ -197,8 +199,8 @@ const Room = (props) => {
           alert("plz select name which is more accurate to your interest cause the room with this name is full");
           window.location.href = '/home';
         })
-
-        socketRef.current.emit('tell everyone that i arrived', {email: emailRef.current, roomID});
+        
+        
 
         socketRef.current.on("all users", (users) => {
           const peers = [];
@@ -238,6 +240,15 @@ const Room = (props) => {
     // Save messages to localStorage whenever they change
     localStorage.setItem(`chatMessages_${roomID}`, JSON.stringify(messages));
   }, [messages, roomID]);
+
+  useEffect(()=>{
+    console.log("NAME CONTEXT CHAGNED: : ", nameInContext);
+    console.log("soket current: ", socketRef.current);
+    
+    socketRef.current.emit('tell everyone that i arrived', {name: nameInContext, roomID});
+    console.log("NAMEINCONTEXT::::203::: ", nameInContext);
+
+  }, [nameInContext])
 
   const iceServers = [
     {
@@ -282,7 +293,7 @@ const Room = (props) => {
   }
 
   function sendMessage() { 
-    const newMessage = { roomID, message: inputMessage, from: socketRef.current.id };
+    const newMessage = { roomID, message: inputMessage, from: nameInContext };
     socketRef.current.emit("send message", newMessage);
     setMessages((prevMessages) => [...prevMessages, newMessage]);
     setInputMessage("");
@@ -299,9 +310,9 @@ const Room = (props) => {
       window.location.reload();
     });
 
-    socketRef.current.on('user broadcasting his name', userWhoJoined => {
-      console.log("he joined who: ", userWhoJoined);
-      setUserWhoJoined(userWhoJoined);
+    socketRef.current.on('user broadcasting his name', nameOfUserWhoJoined => {
+      console.log("he joined who: ", nameOfUserWhoJoined);
+      setUserWhoJoined(nameOfUserWhoJoined);
 
       setTimeout(() => {
           setUserWhoJoined(false);
