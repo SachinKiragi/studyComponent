@@ -17,7 +17,6 @@ const cert = fs.readFileSync('cert.crt');
 let server;
 
 const socket = require("socket.io");
-const UserModel = require('./models/user');
 
 if (process.env.NODE_ENV === 'production') {
     app.use(express.static(path.join(__dirname, 'client/build')));
