@@ -7,6 +7,7 @@ import { signInWithPopup } from "firebase/auth";
 import { useName } from '../context/NameContext';
 
 
+
 const Register = () => {
 
     const [name, setName] = useState();
@@ -62,6 +63,11 @@ const Register = () => {
           });
       };
 
+      const handleEnterAsAGuest = () => {
+        setNameInContext("Anonymous");
+        history.push(`/home`);
+      }
+
   return (
     <div style={styles.container}>
       <div style={styles.header}>
@@ -70,31 +76,15 @@ const Register = () => {
           Collaborate, learn, and grow with peers. Create or join live study groups for any subject!
         </p>
       </div>
-        {/* <div style={styles.formGroup}>
-          <label htmlFor="name" style={styles.label}>
-            Name:
-          </label>
-          <input value={name} onChange={(e)=>setName(e.target.value)} type="text" name="name" id="name" style={styles.input} placeholder="Enter your full name" />
-        </div>
-        <div style={styles.formGroup}>
-          <label htmlFor="email" style={styles.label}>
-            Email:
-          </label>
-          <input value={email} onChange={(e)=>setEmail(e.target.value)} type="email" name="email" id="email" style={styles.input} placeholder="Enter your email address" />
-        </div>
-        {/* <button onClick={handleSubmit} type="submit" style={styles.registerButton}>
-          Register
-        </button> */}
-        <button onClick={handleGoogleSignIn} style={styles.registerButton}>
-          Register with Gmail
-        </button>
-        {/* <div style={styles.loginContainer}>
-          <h4 style={styles.loginText}>Already have an account?</h4>
-         
-          <button onClick={()=>history.push('/login')} type="button" style={styles.loginButton}>
-            Login
+        
+        <div style={{display:'flex', flexDirection:'column', gap:'1rem'}}>
+          <button onClick={handleGoogleSignIn} style={styles.registerButton}>
+            Sign in with Gmail
           </button>
-        </div> */}
+          <button onClick={handleEnterAsAGuest} style={styles.registerButton}>
+            Enter as a guest
+          </button>
+        </div>
     </div>
   );
 };

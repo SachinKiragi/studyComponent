@@ -3,12 +3,13 @@ import { useHistory } from "react-router-dom";
 import '../styles/CreateRoom.css'
 import { useName } from "../context/NameContext";
 import axios from 'axios'
+
 const CreateRoom = () => {
     const [roomName, setRoomName] = useState("");
     const history = useHistory();
     const [existingRooms, setExistingRooms] = useState([{}]);
     const {nameInContext, setNameInContext} = useName();
-
+    
     function create() {
         if (roomName.trim()) {
             history.push(`/room/${roomName}`);
@@ -25,11 +26,6 @@ const CreateRoom = () => {
     useEffect(()=>{
         console.log("name: ", nameInContext);
         
-        let myEmail = window.localStorage.getItem("myEmail");
-            window.localStorage.clear(); // Clears all other localStorage data
-            window.localStorage.setItem("myEmail", myEmail); // Restore the myEmail value
-            console.log("Restored myEmail:", window.localStorage.getItem("myEmail"));
-
             // setNameInContext(myEmail);
             const apiUrl = process.env.NODE_ENV === 'production'
             ? '/get-rooms' // Relative URL in production
@@ -80,7 +76,7 @@ const CreateRoom = () => {
                 <div className="button-group">
                     <button className="action-button" onClick={create}>Create Room</button>
                     <button className="action-button" onClick={create}>Join Room</button>
-                    <button className="action-button" onClick={()=>window.location.href='login'}>Log Out</button>
+                    <button className="action-button" onClick={()=>window.location.href='/'}>Log Out</button>
                 </div>
             </div>
 

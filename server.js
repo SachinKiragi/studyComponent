@@ -1,5 +1,4 @@
 require('dotenv').config();
-const { log } = require('console');
 const express = require("express");
 const https = require("https");
 const path = require('path')
@@ -8,7 +7,6 @@ const app = express();
 const fs = require('fs');
 app.use(express.static(__dirname))
 
-const mongoose = require('mongoose')
 const cors = require('cors')
 
 
@@ -40,60 +38,11 @@ if (process.env.NODE_ENV === 'production') {
   
 
 
-mongoose.connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  }).then(() => console.log("Connected to MongoDB"))
-    .catch(err => console.error("MongoDB connection error:", err));
-
-    app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
-});
-
 
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
   });
   
-
-app.post('/register', (req, res)=>{
-    console.log("req.bosy in register: ", req.body);
-    
-    UserModel.create(req.body).
-    then(user => res.json(user))
-    .catch(err => res.json(err))
-    console.log("user created successfulyy\n");
-    
-})
-
-
-app.post('/login', async(req, res)=>{
-    console.log("rew.bodt: ", req.body);
-    
-    const {email} = req.body;
-    UserModel.findOne({email: email})
-    .then(user => {
-        if(user){
-            res.json("Success")
-        } else{
-            res.json("The email does not exist in our database")
-        }
-    })
-})
-
-
-async function getUsernameByEmail(email){
-    let userName = "unknown";
-    await UserModel.findOne({email: email})
-    .then(user => {
-        if(user){
-            console.log("user, ", user.name);
-            userName = user;
-        }
-    })
-
-    return userName;
-}
 
 
 
@@ -151,7 +100,7 @@ io.on('connection', socket => {
 
     socket.on("sending signal", payload => {
         io.to(payload.userToSignal).emit('user joined', { signal: payload.signal, callerID: payload.callerID });
-    });
+    }); 
 
     socket.on("returning signal", payload => {
         io.to(payload.callerID).emit('receiving returned signal', { signal: payload.signal, id: socket.id });

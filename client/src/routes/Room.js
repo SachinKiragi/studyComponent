@@ -160,7 +160,6 @@ const Room = (props) => {
   const [userName, setUserName] = useState("Unknown");
   const [userWhoJoined, setUserWhoJoined] = useState(false);
 
-  const emailRef = useRef(nameInContext); // Persist nameInContext across renders
 
   // useEffect(() => {
   //   if (nameInContext === "unknown") {
@@ -173,7 +172,6 @@ const Room = (props) => {
   useEffect(() => {
     console.log("NAMEINCONTEXT: ", nameInContext);
     
-    console.log("Persisted email:", emailRef.current); // Always holds the most recent value
   }, []);
   
 
