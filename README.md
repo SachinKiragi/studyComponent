@@ -1,19 +1,19 @@
-# 📚 GroupStudy Platform - Real-Time Study Collaboration  
+# GroupStudy Platform - Real-Time Study Collaboration  
 
-## 🚀 Project Overview  
+## Project Overview  
 GroupStudy Platform is a **real-time video conferencing application** designed for **seamless collaborative learning**. Unlike traditional platforms, it allows users to **instantly join study groups by simply typing a subject name**, eliminating the need for invite links. Users can **create rooms, join ongoing study sessions, and interact through video calls and chat messaging**, making group study more accessible and engaging.  
 
-## ❗ Problem Statement  
+## Problem Statement  
 In today’s digital learning environment, students face **limited interactive learning opportunities** and often feel **isolated in virtual classrooms**. Existing platforms lack **seamless study-based group collaboration**, relying on **manual invite links** and **complex setups** that hinder accessibility. **GroupStudy Platform** solves this by offering an intuitive, **subject-based joining system**, where students can **search, join, or create study rooms effortlessly**, fostering a more **engaging and interactive learning experience**.  
 
-## ✨ Key Features  
-🔑 **User Authentication** – Secure signup and login  
-🎓 **Instant Room Joining** – Type a subject name to join without invite links  
-🎥 **Real-time Video Conferencing** – Connect with multiple students via WebRTC  
-💬 **Chat Messaging** – Text-based communication alongside video calls  
-🏷 **User Presence Indicators** – See who joins or leaves the study group  
-📜 **Persistent Chat History** – Messages remain for session duration  
-🤖 **AI-Powered Doubt Resolution (Gemini AI)** – Get instant answers to academic doubts in real-time
+## Key Features  
+**User Authentication** – Secure signup and login  
+**Instant Room Joining** – Type a subject name to join without invite links  
+**Real-time Video Conferencing** – Connect with multiple students via WebRTC  
+**Chat Messaging** – Text-based communication alongside video calls  
+**User Presence Indicators** – See who joins or leaves the study group  
+**Persistent Chat History** – Messages remain for session duration  
+**AI-Powered Doubt Resolution (Gemini AI)** – Get instant answers to academic doubts in real-time
 
 ## 🛠 Dependencies  
 ### Server-Side Dependencies 
