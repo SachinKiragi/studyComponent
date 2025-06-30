@@ -15,7 +15,7 @@ In today’s digital learning environment, students face **limited interactive l
 **Persistent Chat History** – Messages remain for session duration  
 **AI-Powered Doubt Resolution (Gemini AI)** – Get instant answers to academic doubts in real-time
 
-## 🛠 Dependencies  
+## Dependencies  
 ### Server-Side Dependencies 
 
 
