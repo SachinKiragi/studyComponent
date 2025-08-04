@@ -161,29 +161,13 @@ const Room = (props) => {
   const [userWhoJoined, setUserWhoJoined] = useState(false);
 
 
-  // useEffect(() => {
-  //   if (nameInContext === "unknown") {
-  //     const emailFromLocalStorage = window.localStorage.getItem("myEmail");
-  //     setNameInContext(emailFromLocalStorage);
-  //     emailRef.current = emailFromLocalStorage; // Persist the value in ref
-  //   }
-  // }, [nameInContext]);
-  
   useEffect(() => {
-    console.log("NAMEINCONTEXT: ", nameInContext);
-    
-  }, []);
-  
-
-
-  useEffect(() => {
-    // Load stored messages for the room
     
     const storedMessages = JSON.parse(localStorage.getItem(`chatMessages_${roomID}`)) || [];
     setMessages(storedMessages);
 
     const socketUrl = process.env.NODE_ENV === 'production' 
-      ? '' // Empty string means connect to same host
+      ? ''
       : `${process.env.REACT_APP_BASE_URL}:8181`;
 
     socketRef.current = io.connect(socketUrl);
@@ -229,23 +213,16 @@ const Room = (props) => {
       });
 
     return () => {
-      // Save messages for the room on component unmount
       localStorage.setItem(`chatMessages_${roomID}`, JSON.stringify(messages));
     };
   }, [roomID]);
 
   useEffect(() => {
-    // Save messages to localStorage whenever they change
     localStorage.setItem(`chatMessages_${roomID}`, JSON.stringify(messages));
   }, [messages, roomID]);
 
   useEffect(()=>{
-    console.log("NAME CONTEXT CHAGNED: : ", nameInContext);
-    console.log("soket current: ", socketRef.current);
-    
     socketRef.current.emit('tell everyone that i arrived', {name: nameInContext, roomID});
-    console.log("NAMEINCONTEXT::::203::: ", nameInContext);
-
   }, [nameInContext])
 
   const iceServers = [
@@ -309,16 +286,12 @@ const Room = (props) => {
     });
 
     socketRef.current.on('user broadcasting his name', nameOfUserWhoJoined => {
-      console.log("he joined who: ", nameOfUserWhoJoined);
       setUserWhoJoined(nameOfUserWhoJoined);
-
       setTimeout(() => {
           setUserWhoJoined(false);
       }, 3000);
       
     })
-
-
   }, []);
 
   function leaveRoom() {
@@ -337,8 +310,6 @@ const Room = (props) => {
     let myEmail = window.localStorage.getItem("myEmail");
     window.localStorage.clear(); // Clears all other localStorage data
     window.localStorage.setItem("myEmail", myEmail); // Restore the myEmail value
-    console.log("Restored myEmail:", window.localStorage.getItem("myEmail"));
-
     window.location.href = `/home`;
   }
 
@@ -381,17 +352,10 @@ const Room = (props) => {
 `;
 
 
-function handleEnterForUserName(e){
-  console.log("e.key", e.key);
-  
-  if(e.key=='Enter'){
-   
-  }
-}
+
 
   const messagesEndRef = useRef(null);
 
-  // Scroll to the bottom when messages change
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
@@ -423,8 +387,8 @@ function handleEnterForUserName(e){
               overflowY: 'auto',
               height: 'calc(100% - 4rem)',
               padding: '1rem',
-              scrollbarWidth: 'none', /* For Firefox */
-              msOverflowStyle: 'none', /* For Internet Explorer and Edge */
+              scrollbarWidth: 'none', 
+              msOverflowStyle: 'none', 
             }}
           >
             {messages.map((msg) => {
@@ -434,7 +398,6 @@ function handleEnterForUserName(e){
                 <p>{msg.message}</p>
               </MessageDiv>
             })}
-            {/* Invisible div to ensure scrolling */}
             <div ref={messagesEndRef} />
           </div>
           <div

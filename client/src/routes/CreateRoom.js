@@ -16,33 +16,19 @@ const CreateRoom = () => {
         } else {
             alert("Please enter a room name!");
         }
-    }
-
-    useEffect(() => {
-        console.log("Name in context updated: ", nameInContext);
-      }, [nameInContext]);
-      
+    } 
 
     useEffect(()=>{
         console.log("name: ", nameInContext);
         
-            // setNameInContext(myEmail);
             const apiUrl = process.env.NODE_ENV === 'production'
-            ? '/get-rooms' // Relative URL in production
+            ? '/get-rooms' 
             : `${process.env.REACT_APP_BASE_URL}:8181/get-rooms`;
 
-            axios.post(apiUrl).then(({data}) => {                
-                console.log("hejd");
-                console.log(data);
+            axios.post(apiUrl).then(({data}) => {  
                 setExistingRooms(data);
             });
-
     }, [])
-
-    useEffect(()=>{
-        console.log("rooms: ", existingRooms);
-    }, [existingRooms])
-
 
     const getOngoingRooms = (room,people)=>{
         return (

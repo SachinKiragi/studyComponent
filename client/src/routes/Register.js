@@ -15,47 +15,11 @@ const Register = () => {
     const {NameContext, setNameInContext} = useName();
 
 
-    // const validateDeatils = () => {
-    //   // Regular expression for validating email
-    //   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    //   return emailRegex.test(email) && name.length;
-    // };
-
-
-    // const handleSubmit = (e)=>{
-    //     e.preventDefault();
-
-    //     if(!validateDeatils()){
-    //       alert("Invalid details\n");
-    //       return;
-    //     }
-
-    //     const apiUrl = process.env.NODE_ENV === 'production'
-    //     ? '/register' // Relative URL in production
-    //     : `${process.env.REACT_APP_BASE_URL}:8181/register`;
-    //     console.log("name: ", name, " email: ", email);
-        
-    //     axios.post(apiUrl, {name, email})
-    //     .then(res => {
-    //         console.log(res);
-    //         // navigate('/login')
-    //         history.push(`login`);
-
-    //     })
-    //     .catch(err => console.log(err));
-        
-
-    // }
-
     const handleGoogleSignIn = () => {
-        console.log("clicked");
         
         signInWithPopup(auth, provider)
           .then((result) => {
-            console.log("Logged in:", result.user.displayName);
-            setNameInContext(result.user.displayName);
-            console.log("nameincontext: ", NameContext);
-            
+            setNameInContext(result.user.displayName);            
             history.push(`/home`);
           })
           .catch((error) => {
