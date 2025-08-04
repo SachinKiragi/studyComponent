@@ -4,7 +4,7 @@ import { getAuth, onAuthStateChanged } from 'firebase/auth';
 const NameContext = createContext();
 
 export const NameProvider = ({ children }) => {
-  const [nameInContext, setNameInContext] = useState("unknown");
+  const [nameInContext, setNameInContext] = useState("Anonymous");
   const nameSetRef = useRef(false); // this won't reset on re-render
 
   useEffect(() => {
